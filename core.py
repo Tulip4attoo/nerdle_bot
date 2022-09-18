@@ -1,6 +1,7 @@
 from config import color
 import config as cfg
 import math
+from tqdm import tqdm
 
 ops = "+-*/"
 all_chars = {True: "0123456789+-*/", False: "123456789"}
@@ -106,14 +107,39 @@ def get_guess_score(guess_str, avail_cases):
 
 
 def solve_a_target(target_str, all_cases, render=True):
-    first_guess = cfg.FIRST_GUESS
     guess_result = "00000000"
-    curr_guess = first_guess
+    curr_guess = cfg.FIRST_GUESS
     avail_cases = all_cases[:]
     count = 0
     while guess_result != "22222222":
-        guess_result = get_guess_result(curr_guess, target_str)
-        get_guess_result(curr_guess, target_str, render=render)
+        guess_result = get_guess_result(curr_guess, target_str, render=render)
+        count += 1
+        tmp_cases = []
+        for case in avail_cases:
+            tmp_result = get_guess_result(curr_guess, case)
+            if tmp_result == guess_result:
+                tmp_cases.append(case)
+        scores = []
+        for case in tmp_cases:
+            scores.append(get_guess_score(case, tmp_cases))
+        max_score = max(scores)
+        max_score_inds = [i for i, j in enumerate(scores) if j == max_score]
+        curr_guess = tmp_cases[max_score_inds[0]]
+        avail_cases = tmp_cases[:]
+        if count > 6:
+            count = 10 # a little penalty
+            break
+    return count
+
+
+def solve_curr_answer(all_cases):
+    curr_guess = cfg.FIRST_GUESS
+    guess_result = "00000000"
+    avail_cases = all_cases[:]
+    count = 0
+    while guess_result != "22222222":
+        print(f"Please guess: {curr_guess}")
+        guess_result = input("Write the guess result here: ")
         count += 1
         tmp_cases = []
         for case in avail_cases:
@@ -128,7 +154,10 @@ def solve_a_target(target_str, all_cases, render=True):
         curr_guess = tmp_cases[max_score_inds[0]]
         avail_cases = tmp_cases[:]
         if count > 5:
+            print("Sorry, it's too hard :(")
             count = 7 # a little penalty
             break
+    print("herherher")
     return count
+
 
