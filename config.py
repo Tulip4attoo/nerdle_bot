@@ -9,4 +9,4 @@ class color:
                     f"{purple}███{ENDC}",
                     f"{green}███{ENDC}"]
 
-
+FIRST_GUESS = "48-32=16"

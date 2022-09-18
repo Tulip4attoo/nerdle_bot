@@ -1,4 +1,5 @@
 from config import color
+import config as cfg
 import math
 
 ops = "+-*/"
@@ -45,7 +46,7 @@ def gen_all_cases():
     return gen_chars(8, 4) + gen_chars(8, 5) + gen_chars(8, 6)
 
 
-def get_guess_result(guess_str, target_str, render=True):
+def get_guess_result(guess_str, target_str, render=False):
     """
     There are 8 characters in an operation. We create a result list
     that response for each character.
@@ -91,7 +92,7 @@ def render_result(guess_str, target_str, result):
 def get_guess_score(guess_str, avail_cases):
     result_dict = {}
     for case in avail_cases:
-        result = get_guess_result(guess_str, case, render=False)
+        result = get_guess_result(guess_str, case)
         if result not in result_dict:
             result_dict[result] = 1
         else:
@@ -102,3 +103,32 @@ def get_guess_score(guess_str, avail_cases):
         p_x = result_dict[key] / total
         score += p_x * math.log(1/p_x, 2)
     return score
+
+
+def solve_a_target(target_str, all_cases):
+    first_guess = cfg.FIRST_GUESS
+    guess_result = "00000000"
+    curr_guess = first_guess
+    avail_cases = all_cases[:]
+    count = 0
+    while guess_result != "22222222":
+        guess_result = get_guess_result(curr_guess, target_str)
+        get_guess_result(curr_guess, target_str, render=True)
+        count += 1
+        print(count)
+        tmp_cases = []
+        for case in avail_cases:
+            tmp_result = get_guess_result(curr_guess, case)
+            if tmp_result == guess_result:
+                tmp_cases.append(case)
+        scores = []
+        for case in tmp_cases:
+            scores.append(get_guess_score(case, tmp_cases))
+        max_score = max(scores)
+        max_score_inds = [i for i, j in enumerate(scores) if j == max_score]
+        curr_guess = tmp_cases[max_score_inds[0]]
+        avail_cases = tmp_cases[:]
+        if count > 5:
+            break
+    return count
+
