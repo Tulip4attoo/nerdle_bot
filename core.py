@@ -1,3 +1,5 @@
+from config import color
+
 ops = "+-*/"
 all_chars = {True: "0123456789+-*/", False: "123456789"}
 
@@ -52,10 +54,9 @@ def get_guess_result(guess_str, target_str):
     + 2 as correct spot.
     In short, the larger value = better precision.
     """
-    print(guess_str + "\n" + target_str)
+    # print(guess_str + "\n" + target_str)
     result = [0] * 8
-    checked_guess_positions = []
-    checked_target_positions = []
+    checked_guess_positions, checked_target_positions = [], []
     # check correct position
     for i in range(8):
         if guess_str[i] == target_str[i]:
@@ -73,7 +74,15 @@ def get_guess_result(guess_str, target_str):
                 result[i] = 1
                 checked_guess_positions.append(i)
                 checked_target_positions.append(j)
+    render_result(guess_str, target_str, result)
     return result
 
 
+def render_result(guess_str, target_str, result):
+    print("GUESS:   " + "  ".join(list(guess_str)))
+    result_string = "RESULT: "
+    for i in result:
+        result_string += color.color_encoded[i]
+    print(result_string)
+    print("TARGET:  " + "  ".join(list(target_str)))
 
