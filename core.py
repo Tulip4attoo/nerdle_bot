@@ -34,7 +34,7 @@ def get_string_ops_result(a_gather, target_length):
     if not a_gather[1]:
         return a_gather, False
     ops_result = eval(a_gather[0])
-    if (ops_result > 0) and is_integer_num(ops_result):
+    if (ops_result >= 0) and is_integer_num(ops_result):
         ops_result = int(ops_result)
         string_constructed = a_gather[0] + "=" + str(ops_result)
         if len(string_constructed) == target_length:
@@ -105,7 +105,7 @@ def get_guess_score(guess_str, avail_cases):
     return score
 
 
-def solve_a_target(target_str, all_cases):
+def solve_a_target(target_str, all_cases, render=True):
     first_guess = cfg.FIRST_GUESS
     guess_result = "00000000"
     curr_guess = first_guess
@@ -113,9 +113,8 @@ def solve_a_target(target_str, all_cases):
     count = 0
     while guess_result != "22222222":
         guess_result = get_guess_result(curr_guess, target_str)
-        get_guess_result(curr_guess, target_str, render=True)
+        get_guess_result(curr_guess, target_str, render=render)
         count += 1
-        print(count)
         tmp_cases = []
         for case in avail_cases:
             tmp_result = get_guess_result(curr_guess, case)
@@ -129,6 +128,7 @@ def solve_a_target(target_str, all_cases):
         curr_guess = tmp_cases[max_score_inds[0]]
         avail_cases = tmp_cases[:]
         if count > 5:
+            count = 7 # a little penalty
             break
     return count
 
