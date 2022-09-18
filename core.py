@@ -1,4 +1,5 @@
 from config import color
+import math
 
 ops = "+-*/"
 all_chars = {True: "0123456789+-*/", False: "123456789"}
@@ -44,7 +45,7 @@ def gen_all_cases():
     return gen_chars(8, 4) + gen_chars(8, 5) + gen_chars(8, 6)
 
 
-def get_guess_result(guess_str, target_str):
+def get_guess_result(guess_str, target_str, render=True):
     """
     There are 8 characters in an operation. We create a result list
     that response for each character.
@@ -55,34 +56,49 @@ def get_guess_result(guess_str, target_str):
     In short, the larger value = better precision.
     """
     # print(guess_str + "\n" + target_str)
-    result = [0] * 8
+    result = ["0"] * 8
     checked_guess_positions, checked_target_positions = [], []
     # check correct position
     for i in range(8):
         if guess_str[i] == target_str[i]:
-            result[i] = 2
+            result[i] = "2"
             checked_guess_positions.append(i)
             checked_target_positions.append(i)
     # check wrong spot position
     for i in range(8):
         for j in range(8):
-            if i in checked_guess_positions:
-                continue
-            if j in checked_target_positions:
+            if (i in checked_guess_positions) or \
+                (j in checked_target_positions):
                 continue
             if guess_str[i] == target_str[j]:
-                result[i] = 1
+                result[i] = "1"
                 checked_guess_positions.append(i)
                 checked_target_positions.append(j)
-    render_result(guess_str, target_str, result)
-    return result
+    if render:
+        render_result(guess_str, target_str, result)
+    return "".join(result)
 
 
 def render_result(guess_str, target_str, result):
     print("GUESS:   " + "  ".join(list(guess_str)))
     result_string = "RESULT: "
     for i in result:
-        result_string += color.color_encoded[i]
+        result_string += color.color_encoded[int(i)]
     print(result_string)
     print("TARGET:  " + "  ".join(list(target_str)))
 
+
+def get_guess_score(guess_str, avail_cases):
+    result_dict = {}
+    for case in avail_cases:
+        result = get_guess_result(guess_str, case, render=False)
+        if result not in result_dict:
+            result_dict[result] = 1
+        else:
+            result_dict[result] += 1
+    score = 0
+    total = len(avail_cases)
+    for key in result_dict.keys():
+        p_x = result_dict[key] / total
+        score += p_x * math.log(1/p_x, 2)
+    return score
