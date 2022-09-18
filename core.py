@@ -40,3 +40,40 @@ def get_string_ops_result(a_gather, target_length):
 
 def gen_all_cases():
     return gen_chars(8, 4) + gen_chars(8, 5) + gen_chars(8, 6)
+
+
+def get_guess_result(guess_str, target_str):
+    """
+    There are 8 characters in an operation. We create a result list
+    that response for each character.
+    There are 3 values in result list, that we label:
+    + 0 as not in the target operation, default value.
+    + 1 as in the position but wrong spot.
+    + 2 as correct spot.
+    In short, the larger value = better precision.
+    """
+    print(guess_str + "\n" + target_str)
+    result = [0] * 8
+    checked_guess_positions = []
+    checked_target_positions = []
+    # check correct position
+    for i in range(8):
+        if guess_str[i] == target_str[i]:
+            result[i] = 2
+            checked_guess_positions.append(i)
+            checked_target_positions.append(i)
+    # check wrong spot position
+    for i in range(8):
+        for j in range(8):
+            if i in checked_guess_positions:
+                continue
+            if j in checked_target_positions:
+                continue
+            if guess_str[i] == target_str[j]:
+                result[i] = 1
+                checked_guess_positions.append(i)
+                checked_target_positions.append(j)
+    return result
+
+
+
